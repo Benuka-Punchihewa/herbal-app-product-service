@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-deployment
+  labels:
+    app: product
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      labels:
+        app: product
+    spec:
+      containers:
+        - name: product
+          image: benukapunchihewa/product-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5001
+          env:
+            - name: MONGO_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: product-config
+                  key: mongo-url
+            - name: SERVICE_ACCESS_TOKEN
+              valueFrom:
+                configMapKeyRef:
+                  name: product-config
+                  key: service-access-token
+            - name: AUTH_SERVICE_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: product-config
+                  key: auth-service-base-url
+            - name: FIREBASE_STORAGE_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: product-config
+                  key: firebase-storage-bucket
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+spec:
+  selector:
+    app: product
+  ports:
+    - protocol: TCP
+      port: 5003
+      targetPort: 5001
