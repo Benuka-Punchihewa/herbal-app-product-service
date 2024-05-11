@@ -1,8 +1,8 @@
 pipeline {
     agent any
     stages{
-        agent { label 'copper' }
         stage('Clone App'){
+            agent { label 'copper' }
             steps{
                 checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-credentials-copper', url: 'https://github.com/Benuka-Punchihewa/herbal-app-product-service.git']]])
             }
